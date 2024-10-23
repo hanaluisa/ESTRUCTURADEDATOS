@@ -31,7 +31,7 @@ int main() {
     // Buscar el menor valor par en el vector
     for (int i = 0; i < tamanio; i++) {
         if (vector[i] % 2 == 0) { // Verificar si el número es par
-            if (vector[i] < menorPar) {
+            if (menorPar == -1 || vector[i] < menorPar) {
                 menorPar = vector[i]; // Actualizar menor valor par
                 hayPares = true; // Encontró al menos un par
             }
