@@ -10,13 +10,13 @@ struct Nodo {
 void agregarNodo(Nodo*& cabeza, int valor) {
     Nodo* nuevoNodo = new Nodo();
     nuevoNodo->valor = valor;
-    nuevoNodo->siguiente = nullptr;
+    nuevoNodo->siguiente = NULL;
     
     if (!cabeza) {
         cabeza = nuevoNodo;
     } else {
         Nodo* temp = cabeza;
-        while (temp->siguiente != nullptr) {
+        while (temp->siguiente != NULL) {
             temp = temp->siguiente;
         }
         temp->siguiente = nuevoNodo;
@@ -83,7 +83,7 @@ void cargarNumerosFibonacci(Nodo*& cabeza, int limite){
 // Función para imprimir la lista enlazada
 void imprimirLista(Nodo* cabeza) {
     Nodo* temp = cabeza;
-    while (temp != nullptr) {
+    while (temp != NULL) {
         std::cout << temp->valor << " -> ";
         temp = temp->siguiente;
     }
@@ -92,7 +92,7 @@ void imprimirLista(Nodo* cabeza) {
 
 // Función para liberar la memoria de la lista enlazada
 void liberarLista(Nodo*& cabeza) {
-    while (cabeza != nullptr) {
+    while (cabeza != NULL) {
         Nodo* temp = cabeza;
         cabeza = cabeza->siguiente;
         delete temp;
@@ -100,10 +100,10 @@ void liberarLista(Nodo*& cabeza) {
 }
 
 int main() {
-    Nodo* lista = nullptr;
-    Nodo* listaDePares = nullptr;
-    Nodo* listaDePrimos = nullptr;
-    Nodo* listaDeFibonacci = nullptr;
+    Nodo* lista = NULL;
+    Nodo* listaDePares = NULL;
+    Nodo* listaDePrimos = NULL;
+    Nodo* listaDeFibonacci = NULL;
 
     int limite;
 
