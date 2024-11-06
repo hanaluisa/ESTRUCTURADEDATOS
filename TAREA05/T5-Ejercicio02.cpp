@@ -107,7 +107,7 @@ int main() {
 
     int limite;
 
-    std::cout << "Ingrese el límite hasta de las listas a generar: ";
+    std::cout << "Ingrese el tamaño de la lista: ";
     std::cin >> limite;
 
     // Cargar múltiplos de 5 en la lista enlazada
