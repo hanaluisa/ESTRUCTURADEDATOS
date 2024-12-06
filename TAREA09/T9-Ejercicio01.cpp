@@ -4,7 +4,7 @@
 
 using namespace std;
 
-// estructura nodo horizontal para las líneas
+// estructura nodo horizontal para las materias
 struct NodoHorizontalMaterias  {
     string materia;
     NodoHorizontalMaterias * siguiente;
@@ -13,7 +13,7 @@ struct NodoHorizontalMaterias  {
 // estructura nodo vertical para las cursoes
 struct NodoVerticalCurso  {
     string curso;
-    NodoHorizontalMaterias * materias;   // agregar líneas a la canción
+    NodoHorizontalMaterias * materias;
     NodoVerticalCurso * siguiente; 
 };
 
@@ -48,7 +48,7 @@ void agregarMateria(NodoVerticalCurso * curso, const string& materia) {
     }
 }
 
-// imprime cursoes y líneas
+// imprime cursos y materias
 void mostrar(NodoVerticalCurso * inicio) {
     NodoVerticalCurso * temp = inicio;
     while (temp != nullptr) {
