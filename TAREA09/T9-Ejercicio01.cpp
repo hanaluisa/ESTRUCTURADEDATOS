@@ -11,15 +11,15 @@ struct NodoHorizontalMaterias  {
 };
 
 // estructura nodo vertical para las cursoes
-struct NodoVerticalMaterias  {
+struct NodoVerticalCurso  {
     string curso;
     NodoHorizontalMaterias * materias;   // agregar líneas a la canción
-    NodoVerticalMaterias * siguiente; 
+    NodoVerticalCurso * siguiente; 
 };
 
 // crear un nodo vertical
-NodoVerticalMaterias * crearNodoVerticalMaterias (const string& curso) {
-    NodoVerticalMaterias * nuevo = new NodoVerticalMaterias ();
+NodoVerticalCurso * crearNodoVerticalCurso (const string& curso) {
+    NodoVerticalCurso * nuevo = new NodoVerticalCurso ();
     nuevo->curso = curso;
     nuevo->materias = nullptr;
     nuevo->siguiente = nullptr;
@@ -35,7 +35,7 @@ NodoHorizontalMaterias * crearNodoHorizontalMaterias (const string& materia) {
 }
 
 // agrega una materia a un curso
-void agregarMateria(NodoVerticalMaterias * curso, const string& materia) {
+void agregarMateria(NodoVerticalCurso * curso, const string& materia) {
     NodoHorizontalMaterias * nuevaLinea = crearNodoHorizontalMaterias (materia);
     if (curso->materias == nullptr) {
         curso->materias = nuevaLinea;
@@ -49,8 +49,8 @@ void agregarMateria(NodoVerticalMaterias * curso, const string& materia) {
 }
 
 // imprime cursoes y líneas
-void mostrar(NodoVerticalMaterias * inicio) {
-    NodoVerticalMaterias * temp = inicio;
+void mostrar(NodoVerticalCurso * inicio) {
+    NodoVerticalCurso * temp = inicio;
     while (temp != nullptr) {
         cout << temp->curso << endl;
         NodoHorizontalMaterias * linea = temp->materias;
@@ -64,14 +64,14 @@ void mostrar(NodoVerticalMaterias * inicio) {
 }
 
 // guardar cursoes en un archivo
-void guardarEnArchivo(NodoVerticalMaterias * inicio, const string& nombreArchivo) {
+void guardarEnArchivo(NodoVerticalCurso * inicio, const string& nombreArchivo) {
     ofstream archivo(nombreArchivo);
     if (!archivo.is_open()) {
         cout << "Error al abrir el archivo para guardar" << endl;
         return;
     }
 
-    NodoVerticalMaterias * temp = inicio;
+    NodoVerticalCurso * temp = inicio;
     while (temp != nullptr) {
         archivo << temp->curso << endl;
         NodoHorizontalMaterias * linea = temp->materias;
@@ -84,20 +84,19 @@ void guardarEnArchivo(NodoVerticalMaterias * inicio, const string& nombreArchivo
     }
 
     archivo.close();
-    cout << "Cursos guardados en el archivo: " << nombreArchivo << endl;
 }
 
 int main() {
-    NodoVerticalMaterias * inicio = nullptr; // Inicio de la lista vertical
-    NodoVerticalMaterias * actual = nullptr;
-
+    NodoVerticalCurso * inicio = nullptr; // Inicio de la lista vertical
+    NodoVerticalCurso * actual = nullptr;
+    string nombreArchivo = "Archivo_nuevo.txt";
     int opcion;
     do {
         cout << "Ingrese el curso: ";
         string curso;
         getline(cin, curso);
 
-        NodoVerticalMaterias * nuevaMateria = crearNodoVerticalMaterias ("Materia: " + curso);
+        NodoVerticalCurso * nuevaMateria = crearNodoVerticalCurso ("Materia: " + curso);
         if (inicio == nullptr) {
             inicio = nuevaMateria;
         } else {
@@ -112,9 +111,8 @@ int main() {
             if (linea == "fin") break;
             agregarMateria(actual, "Materia: " + linea);
         }
-        cout << "Registros actuales:" << endl;
+        cout << "Registros ingresado:" << endl;
         mostrar(inicio);
-        string nombreArchivo = "Archivo_nuevo.txt";
         guardarEnArchivo(inicio, nombreArchivo);
         int continuar;
         
@@ -130,7 +128,8 @@ int main() {
 
         opcion = continuar;
     } while (opcion != 0);
-
+    
+    cout << "Cursos guardados en el archivo: " << nombreArchivo << endl;
     cout << "Programa finalizado." << endl;
     return 0;
 }
