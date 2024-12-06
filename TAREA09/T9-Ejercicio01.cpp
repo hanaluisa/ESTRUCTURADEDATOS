@@ -111,7 +111,7 @@ int main() {
             if (linea == "fin") break;
             agregarMateria(actual, "Materia: " + linea);
         }
-        cout << "Registros ingresado:" << endl;
+        cout << "Registros actuales:" << endl;
         mostrar(inicio);
         int continuar;
         
