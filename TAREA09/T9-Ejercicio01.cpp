@@ -5,42 +5,42 @@
 using namespace std;
 
 // estructura nodo horizontal para las líneas
-struct NodoHorizontalLineas {
-    string letra;
-    NodoHorizontalLineas* siguiente;
+struct NodoHorizontalMaterias  {
+    string materia;
+    NodoHorizontalMaterias * siguiente;
 };
 
-// estructura nodo vertical para las canciones
-struct NodoVerticalCanciones {
-    string titulo;
-    NodoHorizontalLineas* lineas;   // agregar líneas a la canción
-    NodoVerticalCanciones* siguiente; 
+// estructura nodo vertical para las cursoes
+struct NodoVerticalMaterias  {
+    string curso;
+    NodoHorizontalMaterias * materias;   // agregar líneas a la canción
+    NodoVerticalMaterias * siguiente; 
 };
 
 // crear un nodo vertical
-NodoVerticalCanciones* crearNodoVerticalCanciones(const string& titulo) {
-    NodoVerticalCanciones* nuevo = new NodoVerticalCanciones();
-    nuevo->titulo = titulo;
-    nuevo->lineas = nullptr;
+NodoVerticalMaterias * crearNodoVerticalMaterias (const string& curso) {
+    NodoVerticalMaterias * nuevo = new NodoVerticalMaterias ();
+    nuevo->curso = curso;
+    nuevo->materias = nullptr;
     nuevo->siguiente = nullptr;
     return nuevo;
 }
 
 // crea un nodo horizontal
-NodoHorizontalLineas* crearNodoHorizontalLineas(const string& letra) {
-    NodoHorizontalLineas* nuevo = new NodoHorizontalLineas();
-    nuevo->letra = letra;
+NodoHorizontalMaterias * crearNodoHorizontalMaterias (const string& materia) {
+    NodoHorizontalMaterias * nuevo = new NodoHorizontalMaterias ();
+    nuevo->materia = materia;
     nuevo->siguiente = nullptr;
     return nuevo;
 }
 
-// agrega una línea a una canción
-void agregarLinea(NodoVerticalCanciones* cancion, const string& letra) {
-    NodoHorizontalLineas* nuevaLinea = crearNodoHorizontalLineas(letra);
-    if (cancion->lineas == nullptr) {
-        cancion->lineas = nuevaLinea;
+// agrega una materia a un curso
+void agregarMateria(NodoVerticalMaterias * curso, const string& materia) {
+    NodoHorizontalMaterias * nuevaLinea = crearNodoHorizontalMaterias (materia);
+    if (curso->materias == nullptr) {
+        curso->materias = nuevaLinea;
     } else {
-        NodoHorizontalLineas* temp = cancion->lineas;
+        NodoHorizontalMaterias * temp = curso->materias;
         while (temp->siguiente != nullptr) {
             temp = temp->siguiente;
         }
@@ -48,14 +48,14 @@ void agregarLinea(NodoVerticalCanciones* cancion, const string& letra) {
     }
 }
 
-// imprime canciones y líneas
-void mostrarCanciones(NodoVerticalCanciones* inicio) {
-    NodoVerticalCanciones* temp = inicio;
+// imprime cursoes y líneas
+void mostrar(NodoVerticalMaterias * inicio) {
+    NodoVerticalMaterias * temp = inicio;
     while (temp != nullptr) {
-        cout << temp->titulo << endl;
-        NodoHorizontalLineas* linea = temp->lineas;
+        cout << temp->curso << endl;
+        NodoHorizontalMaterias * linea = temp->materias;
         while (linea != nullptr) {
-            cout << "  " << linea->letra << endl;
+            cout << "  " << linea->materia << endl;
             linea = linea->siguiente;
         }
         temp = temp->siguiente;
@@ -63,72 +63,73 @@ void mostrarCanciones(NodoVerticalCanciones* inicio) {
     }
 }
 
-// guardar canciones en un archivo
-void guardarEnArchivo(NodoVerticalCanciones* inicio, const string& nombreArchivo) {
+// guardar cursoes en un archivo
+void guardarEnArchivo(NodoVerticalMaterias * inicio, const string& nombreArchivo) {
     ofstream archivo(nombreArchivo);
     if (!archivo.is_open()) {
         cout << "Error al abrir el archivo para guardar" << endl;
         return;
     }
 
-    NodoVerticalCanciones* temp = inicio;
+    NodoVerticalMaterias * temp = inicio;
     while (temp != nullptr) {
-        archivo << temp->titulo << endl;
-        NodoHorizontalLineas* linea = temp->lineas;
+        archivo << temp->curso << endl;
+        NodoHorizontalMaterias * linea = temp->materias;
         while (linea != nullptr) {
-            archivo << linea->letra << endl;
+            archivo << linea->materia << endl;
             linea = linea->siguiente;
         }
-        archivo << endl; // Separar canciones con una línea vacía
+        archivo << endl; // Separar cursoes con una línea vacía
         temp = temp->siguiente;
     }
 
     archivo.close();
-    cout << "Canciones guardadas en el archivo: " << nombreArchivo << endl;
+    cout << "Cursos guardados en el archivo: " << nombreArchivo << endl;
 }
 
 int main() {
-    NodoVerticalCanciones* inicio = nullptr; // Inicio de la lista vertical
-    NodoVerticalCanciones* actual = nullptr;
+    NodoVerticalMaterias * inicio = nullptr; // Inicio de la lista vertical
+    NodoVerticalMaterias * actual = nullptr;
 
     int opcion;
     do {
-        cout << "1. Agregar canción" << endl;
-        cout << "2. Mostrar canciones" << endl;
-        cout << "3. Guardar en archivo" << endl;
-        cout << "4. Salir" << endl;
-        cout << "Seleccione una opción: ";
-        cin >> opcion;
-        cin.ignore(); // Limpiar buffer de entrada
+        cout << "Ingrese el curso: ";
+        string curso;
+        getline(cin, curso);
 
-        if (opcion == 1) {
-            cout << "Ingrese el título de la canción: ";
-            string titulo;
-            getline(cin, titulo);
-
-            NodoVerticalCanciones* nuevaCancion = crearNodoVerticalCanciones("Cancion: " + titulo);
-            if (inicio == nullptr) {
-                inicio = nuevaCancion;
-            } else {
-                actual->siguiente = nuevaCancion;
-            }
-            actual = nuevaCancion;
-
-            cout << "Ingrese las líneas de la canción (escriba 'fin' para terminar):" << endl;
-            string linea;
-            while (true) {
-                getline(cin, linea);
-                if (linea == "fin") break;
-                agregarLinea(actual, "linea: " + linea);
-            }
-        } else if (opcion == 2) {
-            cout << "Canciones actuales:" << endl;
-            mostrarCanciones(inicio);
-        } else if (opcion == 3) {
-            string nombreArchivo = "Archivo_nuevo.txt";
-            guardarEnArchivo(inicio, nombreArchivo);
+        NodoVerticalMaterias * nuevaMateria = crearNodoVerticalMaterias ("Materia: " + curso);
+        if (inicio == nullptr) {
+            inicio = nuevaMateria;
+        } else {
+            actual->siguiente = nuevaMateria;
         }
-    } while (opcion != 4);
+        actual = nuevaMateria;
+
+        cout << "Ingrese las materias (escriba 'fin' para terminar):" << endl;
+        string linea;
+        while (true) {
+            getline(cin, linea);
+            if (linea == "fin") break;
+            agregarMateria(actual, "Materia: " + linea);
+        }
+        cout << "Registros actuales:" << endl;
+        mostrar(inicio);
+        string nombreArchivo = "Archivo_nuevo.txt";
+        guardarEnArchivo(inicio, nombreArchivo);
+        int continuar;
+        
+        do {
+            cout << "Salir (0)" << endl;
+            cout << "Continuar (1)" << endl;
+            cin >> continuar;
+            cin.ignore();
+            if (continuar != 0 && continuar != 1) {
+                cout << "Valor inválido. Por favor, introduzca 0 o 1." << endl;
+            }
+        } while (continuar != 0 && continuar != 1);
+
+        opcion = continuar;
+    } while (opcion != 0);
 
     cout << "Programa finalizado." << endl;
     return 0;
