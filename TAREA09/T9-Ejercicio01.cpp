@@ -113,7 +113,6 @@ int main() {
         }
         cout << "Registros ingresado:" << endl;
         mostrar(inicio);
-        guardarEnArchivo(inicio, nombreArchivo);
         int continuar;
         
         do {
@@ -128,7 +127,7 @@ int main() {
 
         opcion = continuar;
     } while (opcion != 0);
-    
+    guardarEnArchivo(inicio, nombreArchivo);
     cout << "Cursos guardados en el archivo: " << nombreArchivo << endl;
     cout << "Programa finalizado." << endl;
     return 0;
