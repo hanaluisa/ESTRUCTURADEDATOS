@@ -307,28 +307,27 @@ int Funcion_Hash(string clave) {
     int l = clave.length();
     // Cada caracter es cambiado a mayusculas 
     for (int i = 0; i < l; i++) {
-        clave[i] = toupper(clave[i]);
+        clave[i] = tolower(clave[i]);
     }
     // Se obtiene el hash del valor str ingresado
     int ClaveTransformada = Transformar_Clave(clave);
     // Retorno del residuo tomando en cuenta la posicion maxima en la tabla principal
     return ClaveTransformada % Principal_Max_Hash;
 }
-
+// Algoritmo: DJB2 Hash
 long Transformar_Clave(string clave) {
-    // Inicializacion de variables
-    long hash = 0;
-    const long prime = 31;  // Usamos un valor primo para multiplicar y distribuir mejor las claves.
+    long d = 5381;  // Valor inicial, una constante comúnmente utilizada
+    int l = clave.length();
 
-    // Resultado de hash [abc] -> 93984 dentro de bucle 
-    for (char c : clave) {
-        // [a] -> 97 {0 * 31 + 97 = 97}
-        // [b] -> 98 {97 * 31 + 98 = 3025}
-        // [c] -> 99 {3025 * 31 + 99 = 93984}
-        hash = hash * prime + c;  // Multiplicamos por un número primo y sumamos el valor del carácter.
+    for (int i = 0; i < l; i++) {
+        // Multiplicar d por 32
+        // Sumamos el valor del carácter actual de la cadena.
+        d = d * 33 + clave[i];
     }
 
-    return hash;
+    // Nos aseguramos de que el valor final sea positivo
+    if (d < 0) d = -d;
+    return d;
 }
 
 void mostrar(Libro lib, int posicion) {
