@@ -35,6 +35,7 @@ int Funcion_Hash(string Clave);
 long Transformar_Clave(string Clave);
 void mostrar(Libro lib, int posicion);
 void mostrarTodos(void);
+void desplegarTodo(void);
 
 int main() {
     cout << "Función Hash con Archivos\n";
@@ -49,6 +50,7 @@ int main() {
         cout << "\n2. Baja";
         cout << "\n3. Consulta";
         cout << "\n4. Consulta Todo";
+		cout << "\n5. Desplegar Todo";
         cout << "\n0. Salir";
 
         // Bucle que solicita al usuario ingresar nuevamente la opcion en caso de que
@@ -72,6 +74,9 @@ int main() {
         case '4':
             mostrarTodos();
             break;
+		case '5':
+            desplegarTodo();
+            break;
         }
     } while (opcion != '0');
 
@@ -80,23 +85,31 @@ int main() {
 
 // Funcion de inicializacion de un arreglo 
 void creacion(void) {
-    // Inicializar la estrcutura de ibro con valores por defecto
-    Libro lib = {"*", "", ""};
-    // Se abre un archivo binario
+    // Comprobar si el archivo ya existe
+    fh = fopen(fich, "rb");
+    if (fh != NULL) {
+        // El archivo ya existe, no es necesario inicializarlo
+        fclose(fh);
+        return;
+    }
+
+    // Si el archivo no existe, crearlo e inicializarlo
     fh = fopen(fich, "wb+");
-    // Verifica si el archivo pudo ser abierto
     if (fh == NULL) {
         cout << "Error al crear el archivo." << endl;
         return;
     }
-    // Bucle que copia - escribe la estructura al archivo
+
+    // Inicializar la estructura Libro con valores por defecto
+    Libro lib = {"*", "", ""};
     for (int i = 0; i < Total_Registros; i++) {
         fwrite(&lib, sizeof(lib), 1, fh);
     }
-    // Cierre del archivo 
+
     fclose(fh);
     fh = NULL;
 }
+
 
 void alta(void) {
     // libro_Nuevo es el libro que el usuario desea registrar. Se inicializa con valores vacíos para los campos codigo, autor y titulo
@@ -149,7 +162,7 @@ void baja(void) {
     char codigo[7], r;
     long posicion;
     
-    // Solicita al usuario e ingreso del codigo a encpontrar
+    // Solicita al usuario e ingreso del codigo a encontrar
     cout << "Codigo:";
     cin >> codigo;
     posicion = Funcion_Hash(codigo);
@@ -320,22 +333,15 @@ long Transformar_Clave(string clave) {
     int l = clave.length();
 
     for (int i = 0; i < l; i++) {
-        // Operación de desplazamiento de bits representada en C++ como {<<}
-        // (d << 5) igual a Multiplicar d por 32 o 2^5 
+        // Multiplicar d por 32
         // Sumamos el valor del carácter actual de la cadena.
-
-        // Ejemplo AB
-        // A -> 65 en ASCII entonces d = ((5381 << 5) + 5381) + 65
-        // d = (5381 * 32) + 5381 + 65 = 177,130 + 5381 + 65 = 182,576
-
-        // B -> 66 en ASCII entonces d = ((182,576 << 5) + 182,576) + 66
-        // d = (182,576 * 32) + 182,576 + 66 = 5,844,432 + 182,576 + 66 = 6,027,074
-
-        d = ((d << 5) + d) + clave[i];  // d * 33 + clave[i]
+        d = d * 33 + clave[i];
     }
 
     // Nos aseguramos de que el valor final sea positivo
     if (d < 0) d = -d;
+	// Esta es una forma de desplegar el valor de la variable d
+	cout << "Valor de la Variable d: " << d << "\n";
     return d;
 }
 
@@ -357,7 +363,7 @@ void mostrarTodos() {
         return;
     }
     cout << "\nTodos: \t";
-    cout << "\n P\t Codigo\t Autor\t Titulo";
+    cout << "\n Posicion\t Codigo\t Autor\t Titulo";
     // Iterar sobre todos los registros del archivo
     for (int i = 0; i < Total_Registros; i++) {
         // Mover el puntero de un archivo fh a una posicion especifica dentro del archivo
@@ -365,6 +371,33 @@ void mostrarTodos() {
         // Lee el bloque de datos a los que se apunto previamente, sabe el tamanio del bloque por sizeof
         fread(&lib, sizeof(lib), 1, fh);
         cout << "\n" << i << "\t" << lib.codigo << "\t" << lib.autor << "\t" << lib.titulo;
+    }
+
+    fclose(fh);
+}
+
+void desplegarTodo() {
+    Libro lib;
+    // Se abre un archivo binario
+    fh = fopen(fich, "rb");
+    // Verifica si el archivo pudo ser abierto
+    if (fh == NULL) {
+        cout << "Error al abrir el archivo." << endl;
+        return;
+    }
+    cout << "\nTodos: \t";
+    cout << "\n Posicion\t Codigo\t Autor\t Titulo";
+    // Iterar sobre todos los registros del archivo
+    for (int i = 0; i < Total_Registros; i++) {
+        // Mover el puntero de un archivo fh a una posicion especifica dentro del archivo
+        fseek(fh, desplazamiento(i), SEEK_SET);
+        // Lee el bloque de datos a los que se apunto previamente, sabe el tamanio del bloque por sizeof
+        fread(&lib, sizeof(lib), 1, fh);
+		// Muestra los valores que en código no contiene *
+		if (strcmp(lib.codigo, "*") != 0) {
+			cout << "\n" << i << "\t" << lib.codigo << "\t" << lib.autor << "\t" << lib.titulo;
+		}
+        
     }
 
     fclose(fh);
