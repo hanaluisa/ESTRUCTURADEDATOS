@@ -37,6 +37,8 @@ void mostrar(Libro lib, int posicion);
 void mostrarTodos(void);
 void desplegarTodo(void);
 
+
+// Función principal
 int main() {
     cout << "Función Hash con Archivos\n";
     char opcion;
