@@ -1,406 +1,119 @@
-#include <string.h>
 #include <iostream>
-#include <stdio.h>
-
-#define Principal_Max_Hash 199
-#define Total_Registros 240
-
-const char fich[17] = "archivo_hash.dat";
-FILE* fh = NULL;
-
 using namespace std;
 
-// Declarar la estructura del libro que contiene codigo, autor y titulo
-typedef struct {
-    char codigo[7];
-    char autor[41];
-    char titulo[41];
-} Libro;
+// Definición de un nodo del árbol binario
 
-// Macro que calcula el desplazamiento o offset de un elemento binario
-// Ejemplo: sizeof(Libro) sería 157 bytes 
-// Desplazamiento recibe la posicion 3 esto multiplicado por 157 = 471
-// Entonces, para leer o escribir el registro en la posición 3, 
-// el puntero de archivo se movería 471 bytes hacia adelante desde el principio del archivo.
-#define desplazamiento(n) ((n) * sizeof(Libro))
+struct Nodo {
+    int valor; // Valor del nodo
+    Nodo* izquierdo; // Valor del nodo
+    Nodo* derecho; // Puntero al nodo derecho
 
-// Declarar los prototipos de funciones que son implementadas despues de la funcion principal
-void creacion(void);
-void alta(void);
-void baja(void);
-void consulta(void);
-void colisiones(Libro lib);
-int indexSinonimo(const char c[]);
-int Funcion_Hash(string Clave);
-long Transformar_Clave(string Clave);
-void mostrar(Libro lib, int posicion);
-void mostrarTodos(void);
-void desplegarTodo(void);
+    // Declara el constructor de la clase Nodo Recibe un parámetro int v 
+    // valor(v) Esto se llama lista de inicialización de miembros,
+    // Inicializa directamente el atributo valor con el valor de v
 
+    //También inicializa los punteros izquierdo y derecho a nullptr (nulo).
+
+    // El cuerpo del constructor. En este caso, está vacío 
+    // porque toda la inicialización se realiza en la lista de inicialización de miembros.
+    Nodo(int v) : valor(v), izquierdo(nullptr), derecho(nullptr) {}
+};
+
+// Función para insertar un valor en el Árbol Binario de Búsqueda (ABB)
+Nodo* insertar(Nodo* raiz, int valor) {
+
+    // Si raiz es nullptr, significa que se ha llegado a una posición vacía en el árbol 
+    // donde se puede insertar un nuevo nodo.
+    if (raiz == nullptr) {
+        return new Nodo(valor);
+    }
+    // Si el valor es menor que el valor almacenado en el nodo actual (raiz->valor), 
+    // se llama recursivamente a la función para insertar el valor en el subárbol izquierdo (raiz->izquierdo).
+    if (valor < raiz->valor) {
+        raiz->izquierdo = insertar(raiz->izquierdo, valor);
+    } else {
+        raiz->derecho = insertar(raiz->derecho, valor);
+    }
+    return raiz;
+}
+
+// Recorrido en Preorden: Raíz, Izquierdo, Derecho
+void preorden(Nodo* raiz) {
+    if (raiz != nullptr) {
+        cout << raiz->valor << " "; // Primero, se visita la raíz
+        preorden(raiz->izquierdo); // Luego, se recorre el subárbol izquierdo
+        preorden(raiz->derecho); // Finalmente, se recorre el subárbol derecho
+    }
+}
+
+// Recorrido en Inorden: Izquierdo, Raíz, Derecho
+void inorden(Nodo* raiz) {
+    if (raiz != nullptr) {
+        inorden(raiz->izquierdo); // Primero, se recorre el subárbol izquierdo
+        cout << raiz->valor << " "; // Luego, se visita la raíz
+        inorden(raiz->derecho); // Finalmente, se recorre el subárbol derecho
+    }
+}
+
+// Recorrido en Postorden: Izquierdo, Derecho, Raíz
+void postorden(Nodo* raiz) {
+    if (raiz != nullptr) {
+        postorden(raiz->izquierdo); // Primero, se recorre el subárbol izquierdo
+        postorden(raiz->derecho); // Luego, se recorre el subárbol derecho
+        cout << raiz->valor << " "; // Luego, se recorre el subárbol derecho
+    }
+}
+
+// Búsqueda en un Árbol Binario de Búsqueda.
+bool buscar(Nodo* raiz, int valor) {
+    if (raiz == nullptr) {
+        return false;
+    }
+    if (raiz->valor == valor) {
+        return true;
+    }
+    // Si el valor a buscar es menor que raiz procede a buscar por el lado izquierdo.
+    if (valor < raiz->valor) {
+        return buscar(raiz->izquierdo, valor);
+    } else {
+        return buscar(raiz->derecho, valor);
+    }
+}
 
 // Función principal
 int main() {
-    cout << "Función Hash con Archivos\n";
-    char opcion;
-    // Crear espacio de memoria que contiene el arreglo de libros con valor inicial de [*]
-    creacion();
-    // Bucle do while, que solicita al usuario el ingreso de una opcion
-    // Mientras la opcion es diferente de cero se seguira ejecutando
-    do {
-        cout << "\n#################";
-        cout << "\n1. Alta";
-        cout << "\n2. Baja";
-        cout << "\n3. Consulta";
-        cout << "\n4. Consulta Todo";
-		cout << "\n5. Desplegar Todo";
-        cout << "\n0. Salir";
+    Nodo* raiz = nullptr;
 
-        // Bucle que solicita al usuario ingresar nuevamente la opcion en caso de que
-        // los valores ingresados sean menores a cero o mayores a 5 los valores son validados
-        // ACII para caracteres
-        do {
-            cout << "\nOpcion:";
-            cin >> opcion;
-        } while (opcion < '0' || opcion > '5');
-        // Ejecuta el metodo segun la opcion ingresada por e usuario  
-        switch (opcion) {
-        case '1':
-            alta();
-            break;
-        case '2':
-            baja();
-            break;
-        case '3':
-            consulta();
-            break;
-        case '4':
-            mostrarTodos();
-            break;
-		case '5':
-            desplegarTodo();
-            break;
-        }
-    } while (opcion != '0');
+    // Insertar valores en el árbol
+    raiz = insertar(raiz, 8);
+    insertar(raiz, 3);
+    insertar(raiz, 10);
+    insertar(raiz, 1);
+    insertar(raiz, 6);
+    insertar(raiz, 14);
+    insertar(raiz, 4);
+    insertar(raiz, 7);
+    insertar(raiz, 13);
 
+    // Mostrar recorridos
+    cout << "Recorrido en Preorden: ";
+    preorden(raiz);
+    cout << endl;
+
+    cout << "Recorrido en Inorden: ";
+    inorden(raiz);
+    cout << endl;
+
+    cout << "Recorrido en Postorden: ";
+    postorden(raiz);
+    cout << endl;
+
+    // Buscar un valor
+    int valorABuscar = 4;
+    if (buscar(raiz, valorABuscar)) {
+        cout << "El valor " << valorABuscar << " se encuentra en el árbol." << endl;
+    } else {
+        cout << "El valor " << valorABuscar << " no se encuentra en el árbol." << endl;
+    }
     return 0;
-}
-
-// Funcion de inicializacion de un arreglo 
-void creacion(void) {
-    // Comprobar si el archivo ya existe
-    fh = fopen(fich, "rb");
-    if (fh != NULL) {
-        // El archivo ya existe, no es necesario inicializarlo
-        fclose(fh);
-        return;
-    }
-
-    // Si el archivo no existe, crearlo e inicializarlo
-    fh = fopen(fich, "wb+");
-    if (fh == NULL) {
-        cout << "Error al crear el archivo." << endl;
-        return;
-    }
-
-    // Inicializar la estructura Libro con valores por defecto
-    Libro lib = {"*", "", ""};
-    for (int i = 0; i < Total_Registros; i++) {
-        fwrite(&lib, sizeof(lib), 1, fh);
-    }
-
-    fclose(fh);
-    fh = NULL;
-}
-
-
-void alta(void) {
-    // libro_Nuevo es el libro que el usuario desea registrar. Se inicializa con valores vacíos para los campos codigo, autor y titulo
-    // libro_Actual Se usara para almacenar el libro que ya está en la posición de memoria que se va a revisar en el archivo.
-    Libro libro_Nuevo = {"", "", ""}, libro_Actual;
-    long posicion;
-    // Se le pide al usuario que ingrese el codigo, autor y titulo del libro que desea registrar.
-    // Estos datos se almacenan en la variable libro_Nuevo.
-    cout << "Codigo:";
-    cin >> libro_Nuevo.codigo;
-    cout << "Autor:";
-    cin >> libro_Nuevo.autor;
-    cout << "Titulo:";
-    cin >> libro_Nuevo.titulo;
-
-    // genera una posición (índice) en el archivo donde se intentará almacenar el libro
-    posicion = Funcion_Hash(libro_Nuevo.codigo);
-
-    // Se abre un archivo binario
-    fh = fopen(fich, "rb+");
-    // Verifica si el archivo pudo ser abierto
-    if (fh == NULL) {
-        cout << "Error al abrir el archivo." << endl;
-        return;
-    }
-
-    // Se mueve el puntero de archivo a la posición calculada posicion (usando la función desplazamiento(posicion) 
-    // para calcular el desplazamiento en bytes). Luego, se lee el libro almacenado en esa posición y se guarda 
-    // en la variable libro_Actual.
-    fseek(fh, desplazamiento(posicion), SEEK_SET);
-    fread(&libro_Actual, sizeof(libro_Actual), 1, fh);
-
-    if (strcmp(libro_Actual.codigo, "*") == 0) { // Si encuentra una posicion vacia ingresa el valor del nuevo registro
-        fseek(fh, desplazamiento(posicion), SEEK_SET);
-        fwrite(&libro_Nuevo, sizeof(libro_Nuevo), 1, fh);
-        cout << "Registro en direccion: " << posicion << "\n";
-    } else if (strcmp(libro_Nuevo.codigo, libro_Actual.codigo) == 0) { // Identifica valores repetidos
-        cout << "\nCodigo repetido";
-    } else { // Llamada de funcion para el manejo de colisiones
-        fclose(fh);
-        colisiones(libro_Nuevo);
-        return;
-    }
-
-    fclose(fh);
-}
-
-void baja(void) {
-    Libro libro_Actual;
-    char codigo[7], r;
-    long posicion;
-    
-    // Solicita al usuario e ingreso del codigo a encontrar
-    cout << "Codigo:";
-    cin >> codigo;
-    posicion = Funcion_Hash(codigo);
-
-    // Se abre un archivo binario
-    fh = fopen(fich, "rb+");
-    // Verifica si el archivo pudo ser abierto
-    if (fh == NULL) {
-        cout << "Error al abrir el archivo." << endl;
-        return;
-    }
-    
-    // Desplaza el puntero del archivo a la ubicacion requerida y lee la posicion del codigo ingresado
-    fseek(fh, desplazamiento(posicion), SEEK_SET);
-    fread(&libro_Actual, sizeof(libro_Actual), 1, fh);
-    
-    // Verificar si el codigo desde el archivo coincide con el codigo ingresado 
-    if (strcmp(libro_Actual.codigo, codigo) != 0)
-        posicion = indexSinonimo(codigo);
-
-    // Verifica si el registro existe
-    if (posicion != -1) {
-        mostrar(libro_Actual, posicion);
-        cout << "\n¿Confirma los datos a borrar(S/N)?";
-        cin >> r;
-        if (toupper(r) == 'S') {
-            // Se asigna el valor definido por defecto en la posicion encontrada en el archivo 'Elimina los registros'
-            strcpy(libro_Actual.codigo, "*");
-            strcpy(libro_Actual.autor, "");
-            strcpy(libro_Actual.titulo, "");
-            fseek(fh, desplazamiento(posicion), SEEK_SET);
-            fwrite(&libro_Actual, sizeof(libro_Actual), 1, fh);
-        }
-    } else {
-        cout << "No hay registro con ese código";
-    }
-
-    fclose(fh);
-}
-
-void consulta(void) {
-    Libro lib;
-    char codigo[7];
-    long posicion;
-
-    cout << "Código a Buscar:";
-    cin >> codigo;
-    posicion = Funcion_Hash(codigo);
-
-    fh = fopen(fich, "rb");
-    if (fh == NULL) {
-        cout << "Error al abrir el archivo." << endl;
-        return;
-    }
-
-    fseek(fh, desplazamiento(posicion), SEEK_SET);
-    fread(&lib, sizeof(lib), 1, fh);
-
-    if (strcmp(lib.codigo, codigo) == 0) {
-        mostrar(lib, posicion);
-    } else {
-        int posicion = indexSinonimo(codigo);
-        if (posicion != -1) {
-            fseek(fh, desplazamiento(posicion), SEEK_SET);
-            fread(&lib, sizeof(lib), 1, fh);
-            mostrar(lib, posicion);
-        } else {
-            cout << "No se encuentra.";
-        }
-    }
-
-    fclose(fh);
-}
-
-void colisiones(Libro libro_Nuevo) {
-    Libro libro_Actual;
-    // CORRECCION: La asignacipn se hace directo a la variable pos
-    int pos = Principal_Max_Hash; // Punto inicial del área de colisiones
-    int j = Principal_Max_Hash; // Contador para el límite superior
-    int encontrado = 0;
-    // Se abre un archivo binario
-    fh = fopen(fich, "rb+");
-    // Verifica si el archivo pudo ser abierto
-    if (fh == NULL) {
-        cout << "Error al abrir el archivo." << endl;
-        return;
-    }
-    // Recorremos el área de sinónimos hasta encontrar un espacio vacío o llegar al límite
-    // CORRECCION: Aqui si ingresa al bucle
-    while ((j < Total_Registros) && !encontrado) {
-        // Funcion que mueve el puntero de archivo a la posicion de pos calculada por la macro
-        // desplazamiento SEEK_SET es un argumento que indica que e desplazamiento va desde el
-        // inicio del archivo
-        fseek(fh, desplazamiento(pos), SEEK_SET); 
-        // Leer el registro
-        fread(&libro_Actual, sizeof(libro_Actual), 1, fh);
-        if (strcmp(libro_Actual.codigo, "*") == 0) { // Espacio vacío encontrado
-            encontrado = 1;
-            fseek(fh, desplazamiento(pos), SEEK_SET);
-            fwrite(&libro_Nuevo, sizeof(libro_Nuevo), 1, fh); // Insertamos el libro
-            cout << "Datos grabados en Área de Colisiones en la posición: " << pos << ".\n";
-        } else {
-            pos++; // CORRECCION: Avanzamos a la siguiente posición
-            if (pos >= Total_Registros) {
-                pos = Principal_Max_Hash; // Volvemos al inicio del área de sinónimos
-            }
-            j++;
-        }
-    }
-
-    if (!encontrado)
-        cout << "Área de sinónimos completa.\n";
-
-    fclose(fh);
-}
-
-int indexSinonimo(const char c[]) {
-    Libro libro_Actual;
-    int pos = Principal_Max_Hash;
-    int j = Principal_Max_Hash;
-    int encontrado = 0;
-    // Abrir archivo binario
-    fh = fopen(fich, "rb");
-    // Verificar correcta apertura
-    if (fh == NULL) {
-        cout << "Error al abrir el archivo." << endl;
-        return -1;
-    }
-
-    while ((j < Total_Registros) && !encontrado) {
-        // Mover el puntero de un archivo fh a una posicion especifica dentro del archivo
-        fseek(fh, desplazamiento(pos), SEEK_SET);
-        // Lee el bloque de datos a los que se apunto previamente, sabe el tamanio del bloque por sizeof
-        fread(&libro_Actual, sizeof(libro_Actual), 1, fh);
-        // Encontar el codigo solicitado c es el parametro de entrado
-        if (strcmp(libro_Actual.codigo, c) == 0)
-            encontrado = 1;
-        else {
-            pos++;
-            if (pos >= Total_Registros) {
-                pos = Principal_Max_Hash;
-            }
-            j++;
-        }
-    }
-
-    fclose(fh);
-    // Operador ternario que indica si encontrado es verdadero 'diferente de cero'
-    // retorna 1 en caso contrario retorna -1 
-    return encontrado ? pos : -1;
-}
-
-int Funcion_Hash(string clave) {
-    // Se obtiene la longitud de a cadena
-    int l = clave.length();
-    // Cada caracter es cambiado a mayusculas 
-    for (int i = 0; i < l; i++) {
-        clave[i] = tolower(clave[i]);
-    }
-    // Se obtiene el hash del valor str ingresado
-    int ClaveTransformada = Transformar_Clave(clave);
-    // Retorno del residuo tomando en cuenta la posicion maxima en la tabla principal
-    return ClaveTransformada % Principal_Max_Hash;
-}
-// Algoritmo: DJB2 Hash
-long Transformar_Clave(string clave) {
-    long d = 5381;  // Valor inicial, una constante comúnmente utilizada
-    int l = clave.length();
-
-    for (int i = 0; i < l; i++) {
-        // Multiplicar d por 32
-        // Sumamos el valor del carácter actual de la cadena.
-        d = d * 33 + clave[i];
-    }
-
-    // Nos aseguramos de que el valor final sea positivo
-    if (d < 0) d = -d;
-	// Esta es una forma de desplegar el valor de la variable d
-	cout << "Valor de la Variable d: " << d << "\n";
-    return d;
-}
-
-void mostrar(Libro lib, int posicion) {
-    // Muestra el valor de la estructura que se envia como parametro, al igual que la posicion
-    cout << "\nPosición: \t" << posicion;
-    cout << "\nCodigo: \t" << lib.codigo;
-    cout << "\nAutor: \t" << lib.autor;
-    cout << "\nTitulo: \n" << lib.titulo;
-}
-
-void mostrarTodos() {
-    Libro lib;
-    // Se abre un archivo binario
-    fh = fopen(fich, "rb");
-    // Verifica si el archivo pudo ser abierto
-    if (fh == NULL) {
-        cout << "Error al abrir el archivo." << endl;
-        return;
-    }
-    cout << "\nTodos: \t";
-    cout << "\n Posicion\t Codigo\t Autor\t Titulo";
-    // Iterar sobre todos los registros del archivo
-    for (int i = 0; i < Total_Registros; i++) {
-        // Mover el puntero de un archivo fh a una posicion especifica dentro del archivo
-        fseek(fh, desplazamiento(i), SEEK_SET);
-        // Lee el bloque de datos a los que se apunto previamente, sabe el tamanio del bloque por sizeof
-        fread(&lib, sizeof(lib), 1, fh);
-        cout << "\n" << i << "\t" << lib.codigo << "\t" << lib.autor << "\t" << lib.titulo;
-    }
-
-    fclose(fh);
-}
-
-void desplegarTodo() {
-    Libro lib;
-    // Se abre un archivo binario
-    fh = fopen(fich, "rb");
-    // Verifica si el archivo pudo ser abierto
-    if (fh == NULL) {
-        cout << "Error al abrir el archivo." << endl;
-        return;
-    }
-    cout << "\nTodos: \t";
-    cout << "\n Posicion\t Codigo\t Autor\t Titulo";
-    // Iterar sobre todos los registros del archivo
-    for (int i = 0; i < Total_Registros; i++) {
-        // Mover el puntero de un archivo fh a una posicion especifica dentro del archivo
-        fseek(fh, desplazamiento(i), SEEK_SET);
-        // Lee el bloque de datos a los que se apunto previamente, sabe el tamanio del bloque por sizeof
-        fread(&lib, sizeof(lib), 1, fh);
-		// Muestra los valores que en código no contiene *
-		if (strcmp(lib.codigo, "*") != 0) {
-			cout << "\n" << i << "\t" << lib.codigo << "\t" << lib.autor << "\t" << lib.titulo;
-		}
-        
-    }
-
-    fclose(fh);
 }
