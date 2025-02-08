@@ -86,7 +86,7 @@ int main() {
 
     // Insertar valores en el árbol
     raiz = insertar(raiz, 8);
-    insertar(raiz, 3);
+    insertar(raiz, 3); 
     insertar(raiz, 10);
     insertar(raiz, 1);
     insertar(raiz, 6);
@@ -109,7 +109,7 @@ int main() {
     cout << endl;
 
     // Buscar un valor
-    int valorABuscar = 4;
+    int valorABuscar = 100;
     if (buscar(raiz, valorABuscar)) {
         cout << "El valor " << valorABuscar << " se encuentra en el árbol." << endl;
     } else {
