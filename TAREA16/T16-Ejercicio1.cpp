@@ -15,7 +15,7 @@ struct Libro {
 
 // Tamaños de áreas
 const int TOTAL_REGISTROS = 1000;
-const int AREA_1_SIZE = TOTAL_REGISTROS * 0.9;   // 60%
+const int AREA_1_SIZE = TOTAL_REGISTROS * 0.9;   // 90%
 const int COLISIONES_SIZE = TOTAL_REGISTROS * 0.1; // 10%
 const char *ARCHIVO_BINARIO = "libros.dat";
 
@@ -68,16 +68,14 @@ void inicializarArchivoBinario() {
 int hashFunction1(const string& codigo) {
     int hashValue = 0;
     string reversedCodigo = string(codigo.rbegin(), codigo.rend()); // Invierte el string
+    int prime = 31;  // Número primo para mejorar distribución
 
-    for (size_t i = 0; i < reversedCodigo.length(); i += 2) {
-        int sum = reversedCodigo[i];
-        if (i + 1 < reversedCodigo.length()) {
-            sum += reversedCodigo[i + 1];  // Suma de dos en dos
-        }
-        hashValue += sum;
+    for (size_t i = 0; i < reversedCodigo.length(); i++) {
+        hashValue = (hashValue * prime) ^ (reversedCodigo[i] * (i + 1));
     }
 
-    return hashValue % AREA_1_SIZE;  // Asegura que esté dentro del área 1 (60%)
+    // Asegurar que el valor esté dentro del rango del área de datos
+    return (hashValue & 0x7FFFFFFF) % AREA_1_SIZE;  
 }
 
 // Verificar si el código ya existe en el archivo binario
